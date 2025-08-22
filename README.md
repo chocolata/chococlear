@@ -1,53 +1,68 @@
-# Clear cache widget details
-This report widget allows to clear OctoberCMS file cache with a single button click.
-> The widget works only if your system is configured to use the file cache driver, which stores the serialized, cached objects in the filesystem!
+# ChocoClear Plugin for October CMS
 
-**[Clear cache widget](http://octobercms.com/plugin/chocolata-chococlear) on OctoberCMS marketplace.**
+ChocoClear provides two report widgets to **inspect** and **clean up** cache and superfluous files on disk.
 
-##### UI
-You can display a widget with a chart or like a single button. Display options shown in the screenshots.
+> **Warning**
+> Purging files is destructive and cannot be undone. Review the affected paths before running a purge.
 
-##### Features
-- Clear cms cache
-  + *cms/cache*
-  + *cms/combiner*
-  + *cms/twig*
-- Clear backend cache
-  + *framework/cache*
-- Clear thumbs cache of uploaded images
+---
 
-##### Available locales
-- ru
-- en
-- pt-br (by [Leonardo Shinagawa](https://github.com/shina))
-- cs (by [Vojta Svoboda](https://github.com/vojtasvoboda))
-- fr (by [Jean Marc BRUNO](https://github.com/jimibi))
-- it (by [Jean Marc BRUNO](https://github.com/jimibi))
-- hu (by [Szabó Gergő](https://github.com/gergo85))
-- tr (by [Sevdin Filiz](https://github.com/angelside))
-- nl (by [Alwin Drenth](https://github.com/adrenth))
-- sk (by [Marek Závacký](https://github.com/emzet))
-- pl (by [Robert Pakszys](https://github.com/gorobert))
-- sl (by [Tomaž Žitnik](https://github.com/tomazzitnik))
+## Widget 1 — File Cache
 
-# Documentation
+Use this widget to view and clear CMS/back-end caches.
 
-#### Installation
-- The plugin can be installed from the Marketplace. Please see the details [here](http://octobercms.com/help/site/projects#introduction).
-- Install from backend:
-  1. Go to "INSTALL PRODUCTS" page;
-  2. Search plugin `Chocolata.ChocoClear` and install it.
+**Requirement:** Your app must use the **file** cache driver (serialized cache objects stored on disk).
 
-  **After installation, you can add widget to dashboard.**
+**Clears (relative to `storage/`):**
+- **CMS cache**
+    - `cms/cache/`
+    - `cms/combiner/`
+    - `cms/twig/`
+- **Back-end cache**
+    - `framework/cache/`
 
-#### Widget configuration
-- **Show without chart**
-Enable this option to display widget without chart.
-- **Chart size**
-Radius value of chart. Optimal value is 200, but it's only my opinion :)
-- **Delete thumbs images**
-If this option is enabled, thumbs of uploaded images also will be cleared.
-- **Path to the folder with thumbs**
-Path to the folder in which stored thumbs cache. The path must be specified relative to the folder `storage`. Default value is `/app/uploads/public`.
-- **Regex for thumb file names**
-Files with a name that matches the pattern will be deleted. For more details see [preg_match](http://php.net/manual/function.preg-match.php) function. Default value is `/^thumb_.*/`.
+**How to use:** Click **Clear**. The paths above are emptied.
+
+**Widget options**
+- **Show without chart** – renders a compact version without the chart.
+- **Chart size** – chart radius (default: `200`).
+
+---
+
+## Widget 2 — Purge Files
+
+Use this widget to view sizes and optionally purge generated or redundant files.
+
+**Targets**
+- **Images**
+    - **Thumbnails** in `storage/app/uploads/public/` matching regex `^thumb_.*`
+    - **Resizer cache** in `storage/app/resources/resize/` (cleared by removing folder contents)
+- **Uploads** (`storage/app/uploads/*`)
+    - **Purgeable uploads**: files present on disk with **no matching row** in `system_files`
+    - **Orphans**: rows in `system_files` with **no `attachment_id`** (DB record + file removed)
+- **Temp folder**
+    - `storage/temp/`
+
+**How to use:** Click **Clear**. What gets purged depends on the widget options you enable.
+
+**Widget options**
+- **Show without chart** – renders a compact version without the chart.
+- **Chart size** – chart radius (default: `200`).
+- **Purge thumbnails** – deletes files whose **filename** matches `^thumb_.*` in `storage/app/uploads/public/`.
+- **Purge resizer cache** – empties `storage/app/resources/resize/`.
+- **Purge uploaded files** – deletes disk files that **do not exist** in `system_files`.
+- **Purge orphaned files** – deletes **orphan records** in `system_files` (no `attachment_id`) and their files (if present).
+- **Purge temp folder** – empties `storage/temp/`.
+
+**Notes**
+- Clearing of cache, thumbnails, resizer cache, uploaded files and orphaned files happen by performing the `october:util purge` commands with different parameters.
+- Clearing of the temp folder is done by removing the entire folder contents.
+- Size calculations can take time on very large trees; values are indicative at the moment of rendering.
+- Be mindful of possible unintended consequences when clearing resizer cache and thumbnails as it may affect image rendering in the front-end (eg. think of resized images in sent emails that no longer will render).
+- Clearing the temp folder should normally be done by the code that places things in there, but this widget provides a way to do it manually.
+
+---
+
+## Locales
+- `en`
+- `nl`
