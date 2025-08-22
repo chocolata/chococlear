@@ -1,0 +1,17 @@
+<div id="purgesizes" class="report-widget">
+    <h3><?= e(trans($this->property('title'))) ?></h3>
+    <div class="control-chart" data-control="chart-pie" data-size="<?=$radius?>" data-center-text="<?=$size['all']?>">
+        <ul>
+            <li>Thumbnails<span><hide class="hidden"><?=$size['thumbs_b']?></hide>&nbsp;<?=$size['thumbs']?></span></li>
+            <li>Resizer cache<span><hide class="hidden"><?=$size['resizer_b']?></hide>&nbsp;<?=$size['resizer']?></span></li>
+            <li>Temp folder<span><hide class="hidden"><?=$size['temp_folder_b']?></hide>&nbsp;<?=$size['temp_folder']?></span></li>
+            <li>Purgeable uploaded files<span><hide class="hidden"><?=$size['uploads_b']?></hide>&nbsp;<?=$size['uploads']?></span></li>
+            <li>Orphaned files<span><hide class="hidden"><?=$size['orphans_b']?></hide>&nbsp;<?=$size['orphans']?></span></li>
+        </ul>
+    </div>
+    <button type="button" class="btn btn-success" style="margin-left: 50px;"
+            data-request="<?= $this->getEventHandler('onClear') ?>"
+            data-request-success="$('#purgesizes').replaceWith(data.partial)">
+        <?= e(trans('chocolata.chococlear::lang.plugin.clear')) ?> <span class="fa icon-trash"></span>
+    </button>
+</div>
